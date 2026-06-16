@@ -99,6 +99,9 @@
                 <button onclick="mulaiUjian()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-blue-500/20 text-sm tracking-wide">
                     Mulai Pentaksiran Sekarang →
                 </button>
+     <button type="button" onclick="pintasJawabSemua()" class="w-full mt-2 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition text-xs no-print">
+    🧪 Mod Penguji: Isi Semua Jawapan Automatik & Lihat Laporan
+</button>   
             </div>
         </section>
 
@@ -658,6 +661,27 @@
 
         function resetAplikasi() { location.reload(); }
         window.onload = function () { checkSavedDraft(); }
+        function pintasJawabSemua() {
+    // Isi maklumat demografi dummy jika kosong
+    document.getElementById('resp-nama').value = "Ayesha (Ujian)";
+    document.getElementById('resp-tingkatan').value = "5 STEM A";
+    document.getElementById('resp-gender').value = "Perempuan";
+    document.getElementById('resp-penguji').value = "Nurul Syahfirah";
+    document.getElementById('consent-check').checked = true;
+
+    // Setkan semua jawapan IPS kepada 'YA' secara rawak/automatik
+    for (let i = 1; i <= 160; i++) {
+        userAnswersIPS[i] = (i % 3 === 0) ? 'TIDAK' : 'YA';
+    }
+    // Setkan semua jawapan IMK kepada 'YA' secara rawak/automatik
+    for (let i = 1; i <= 192; i++) {
+        userAnswersIMK[i] = (i % 4 === 0) ? 'TIDAK' : 'YA';
+    }
+
+    // Terus panggil fungsi proses hasil untuk paparkan dashboard laporan
+    prosesHasilAkhir();
+    showToast("Mod Penguji Aktif: Semua item telah diisi secara automatik!", "success");
+}
     </script>
 </body>
 </html>
