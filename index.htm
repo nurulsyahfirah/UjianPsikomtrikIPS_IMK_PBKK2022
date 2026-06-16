@@ -179,11 +179,14 @@
                 <div>
                     <span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">Bahagian 4: Dashboard Hasil</span>
                     <h2 class="text-3xl font-extrabold text-slate-900 mt-3">Laporan Analisis Pentaksiran Psikometrik</h2>
-                    <p class="text-slate-500 mt-1">Sila simpan data atau hantar ke sistem awan Formspree di bawah.</p>
+                    <p class="text-slate-500 mt-1">Sila simpan data mentah Excel ke komputer atau hantar sandaran ke e-mel Formspree.</p>
                 </div>
                 <div class="flex flex-wrap gap-2.5 no-print">
+                    <button onclick="eksportExcelMentah()" class="px-5 py-3 bg-emerald-700 hover:bg-emerald-600 text-white font-semibold rounded-xl transition shadow-md flex items-center gap-2 text-sm">
+                        📥 Eksport Fail Data Mentah (Excel-CSV)
+                    </button>
                     <button id="btn-formspree" onclick="hantarFormspree()" class="px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition shadow-md flex items-center gap-2 text-sm">
-                        🚀 Hantar Data ke Formspree (E-mel)
+                        🚀 Hantar Sandaran (Formspree)
                     </button>
                     <button onclick="window.print()" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl transition shadow-md flex items-center gap-2 text-sm">
                         🖨️ Cetak / Simpan PDF
@@ -291,7 +294,6 @@
     </footer>
 
     <script>
-        // Pangkalan data Formspree unik yang telah dikunci
         const FORMSPREE_ENDPOINT = "mnjyrooo";
 
         const imkDataPool = [];
@@ -308,12 +310,11 @@
         let itemCounter = 1;
         for(let c = 0; c < 6; c++) {
             for(let i = 0; i < 32; i++) {
-                imkDataPool.push({ id: itemCounter, text: imkTexts[c * 16 + (i % 16)] + ` (${cats[c]}${i+1})`, cat: cats[c] });
+                imkDataPool.push({ id: itemCounter, text: imkTexts[c * 16 + (i % 16)], cat: cats[c] });
                 itemCounter++;
             }
         }
 
-        // 16 Tret IPS Mutlak mengikut Manual Penilaian Standard
         const ipsDataPool = [];
         const ipsCats = ['EKS', 'ANA', 'STR', 'PCP', 'TLG', 'AUT', 'ITL', 'MGL', 'AGR', 'BSD', 'KPL', 'THN', 'KRD', 'SOK', 'INT', 'TPU'];
         const ipsTexts = [
@@ -338,7 +339,7 @@
         let ipsCounter = 1;
         for(let t = 0; t < 16; t++) {
             for(let i = 0; i < 10; i++) {
-                ipsDataPool.push({ id: ipsCounter, text: ipsTexts[t] + ` (Siri ${i+1})`, cat: ipsCats[t] });
+                ipsDataPool.push({ id: ipsCounter, text: ipsTexts[t], cat: ipsCats[t] });
                 ipsCounter++;
             }
         }
@@ -362,7 +363,7 @@
             if (savedIMK || savedIPS || savedDemografi) {
                 showModal(
                     "Sistem Pemulihan Draf",
-                    "Terdapat draf respons yang belum diselesaikan daripada sesi pengujian sebelum ini. Adakah anda mahu memulihkan draf tersebut?",
+                    "Terdapat draf dikesan daripada sesi pengujian sebelum ini. Adakah anda mahu memulihkannya?",
                     "Mula Baharu",
                     "Pulihkan Draf",
                     () => { localStorage.clear(); hideModal(); showToast("Sesi baharu bermula.", "info"); },
@@ -631,32 +632,68 @@
 
         function hantarFormspree() {
             const btn = document.getElementById('btn-formspree');
-            if (FORMSPREE_ENDPOINT === "mnjyrooo" || !FORMSPREE_ENDPOINT) {
-                // Kod penapis sekatan dialihkan demi kelancaran logic hantaran langsung
-            }
-
-            btn.disabled = true;
-            btn.innerText = "⏳ Sedang Menghantar Data...";
+            btn.disabled = true; btn.innerText = "⏳ Menghantar...";
 
             fetch(`https://formspree.io/f/${FORMSPREE_ENDPOINT}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify(dataGlobalEksport)
             })
-            .then(response => {
-                if (response.ok) {
-                    showToast("Data psikometrik berjaya dihantar dan disimpan di Formspree!", "success");
-                    btn.innerText = "✅ Data Berjaya Dihantar";
-                    btn.className = "px-5 py-3 bg-emerald-600 text-white font-semibold rounded-xl cursor-not-allowed text-sm flex items-center gap-2";
-                } else {
-                    throw new Error("Penghantaran gagal");
-                }
+            .then(res => {
+                if (res.ok) {
+                    showToast("Sandaran ringkasan data berjaya dihantar ke Formspree!", "success");
+                    btn.innerText = "✅ Berjaya Dihantar";
+                } else { throw new Error(); }
             })
-            .catch(error => {
-                showToast("Gagal menghantar data. Sila semak sambungan internet anda.", "warning");
-                btn.disabled = false;
-                btn.innerText = "🚀 Cuba Hantar Semula";
+            .catch(() => {
+                showToast("Gagal menghantar ke Formspree. Sila eksport fail Excel-CSV secara manual.", "warning");
+                btn.disabled = false; btn.innerText = "🚀 Cuba Semula";
             });
+        }
+
+        // FUNGSI INOVASI UTAMA: JANA FAIL EXCEL-CSV STRUKTUR DATA MENTAH LENGKAP 352 ITEM
+        function eksportExcelMentah() {
+            const n = document.getElementById('lap-nama').innerText;
+            const t = document.getElementById('lap-tingkatan').innerText;
+            const g = document.getElementById('lap-gender').innerText;
+            const p = document.getElementById('lap-penguji').innerText;
+            const code = document.getElementById('lap-kod-holland').innerText;
+
+            let csvContent = "\uFEFF"; // BOM untuk keserasian fon Bahasa Melayu di Microsoft Excel
+            csvContent += "=== DATA PENTAKSIRAN PSIKOMETRIK LENGKAP (PBKK2022) ===\n\n";
+            csvContent += "METADATA & DEMOGRAFI RESPONDEN\n";
+            csvContent += `Nama Responden (Samaran),${n}\n`;
+            csvContent += `Tingkatan / Aliran,${t}\n`;
+            csvContent += `Jantina,${g}\n`;
+            csvContent += `Pentadbir Ujian,${p}\n`;
+            csvContent += `Hasil Kod Holland,${code}\n\n`;
+
+            // Data Mentah Item Demi Item IPS (160 Item)
+            csvContent += "1. RESPONS MENTAH ITEM: INVENTORI TRET PERSONALITI SIDEK (IPS)\n";
+            csvContent += "ID Item,Konstruk Tret,Pernyataan Instrumen,Pilihan Jawapan Murid\n";
+            ipsDataPool.forEach(item => {
+                const ans = userAnswersIPS[item.id] || "TIADA JAWAPAN";
+                csvContent += `${item.id},${item.cat},"${item.text}",${ans}\n`;
+            });
+            csvContent += "\n";
+
+            // Data Mentah Item Demi Item IMK (192 Item)
+            csvContent += "2. RESPONS MENTAH ITEM: INVENTORI MINAT KERJAYA HOLLAND (SDS/IMK)\n";
+            csvContent += "ID Item,Konstruk RIASEK,Pernyataan Kecenderungan Minat,Pilihan Jawapan Murid\n";
+            imkDataPool.forEach(item => {
+                const ans = userAnswersIMK[item.id] || "TIADA JAWAPAN";
+                csvContent += `${item.id},${item.cat},"${item.text}",${ans}\n`;
+            });
+
+            // Trigger Muat Turun Fail Serta Merta ke Komputer
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.setAttribute("href", URL.createObjectURL(blob));
+            link.setAttribute("download", `Data_Pembetulan_Psikometrik_${n.replace(/\s+/g, '_')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Fail Excel-CSV data mentah item berjaya dieksport!", "success");
         }
 
         function pintasJawabSemua() {
@@ -666,26 +703,25 @@
             document.getElementById('resp-penguji').value = "Nurul Syahfirah Binti Arjaman";
             document.getElementById('consent-check').checked = true;
 
-            // Set simulasi sepadan kes profil Ayesha (SEK + Profil Sah)
             for (let i = 1; i <= 192; i++) {
                 let cat = imkDataPool[i-1].cat;
-                if(cat === 'S') userAnswersIMK[i] = (i % 8 === 0) ? 'TIDAK' : 'YA'; // Tinggi (28)
-                else if(cat === 'E') userAnswersIMK[i] = (i % 4 === 0) ? 'TIDAK' : 'YA'; // Tinggi (24)
-                else if(cat === 'K') userAnswersIMK[i] = (i % 3 === 0) ? 'TIDAK' : 'YA'; // Sederhana Tinggi (23)
-                else if(cat === 'I') userAnswersIMK[i] = (i % 3 === 0 || i % 7 === 0) ? 'YA' : 'TIDAK'; // Sederhana
-                else userAnswersIMK[i] = (i % 5 === 0) ? 'YA' : 'TIDAK'; // Rendah
+                if(cat === 'S') userAnswersIMK[i] = (i % 8 === 0) ? 'TIDAK' : 'YA'; // 28
+                else if(cat === 'E') userAnswersIMK[i] = (i % 4 === 0) ? 'TIDAK' : 'YA'; // 24
+                else if(cat === 'K') userAnswersIMK[i] = (i % 3 === 0) ? 'TIDAK' : 'YA'; // 23
+                else if(cat === 'I') userAnswersIMK[i] = (i % 3 === 0 || i % 7 === 0) ? 'YA' : 'TIDAK'; 
+                else userAnswersIMK[i] = (i % 5 === 0) ? 'YA' : 'TIDAK'; 
             }
 
             for (let i = 1; i <= 160; i++) {
                 let cat = ipsDataPool[i-1].cat;
                 if(['EKS', 'STR', 'PCP', 'TLG', 'ANA'].includes(cat)) userAnswersIPS[i] = (i % 10 === 0) ? 'TIDAK' : 'YA'; // 90%
                 else if(['AUT', 'ITL', 'MGL', 'AGR', 'BSD', 'KPL', 'THN'].includes(cat)) userAnswersIPS[i] = (i % 5 === 0 || i % 6 === 0) ? 'TIDAK' : 'YA'; // 70%-80%
-                else if(['KRD', 'SOK'].includes(cat)) userAnswersIPS[i] = (i % 2 === 0) ? 'YA' : 'TIDAK'; // 60%
-                else userAnswersIPS[i] = (i % 5 === 0) ? 'YA' : 'TIDAK'; // 20% (Introvert & Penipuan Rendah)
+                else if(['KRD', 'SOK'].includes(cat)) userAnswersIPS[i] = (i % 2 === 0) ? 'YA' : 'TIDAK'; 
+                else userAnswersIPS[i] = (i % 5 === 0) ? 'YA' : 'TIDAK'; // 20%
             }
 
             prosesHasilAkhir();
-            showToast("Mod Simulasi Profil Ayesha Aktif! Dashboard sedia disemak.", "success");
+            showToast("Mod Simulasi Aktif! Sila semak struktur fail Excel.", "success");
         }
 
         function resetAplikasi() { location.reload(); }
