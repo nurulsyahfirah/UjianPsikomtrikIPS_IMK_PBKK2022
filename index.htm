@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pentaksiran Psikometrik PBKK2022 - IPG Kampus Kent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-page { page-break-after: always; page-break-inside: avoid; }
+            body { background-color: #ffffff !important; color: #000000 !important; }
+            .print-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+        }
+
+        .option-active-ya {
+            background-color: #def7ec !important;
+            border-color: #057a55 !important;
+            color: #03543f !important;
+        }
+        .option-active-tidak {
+            background-color: #fde8e8 !important;
+            border-color: #e02424 !important;
+            color: #9b1c1c !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <header class="bg-slate-900 text-white shadow-lg no-print sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-blue-600 rounded-xl text-white font-extrabold text-xl shadow-md shadow-blue-500/35">PP</div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight">Aplikasi Pentaksiran Psikometrik</h1>
+                    <p class="text-xs text-slate-400">Kursus PBKK2022 - IPG Kampus Kent, Tuaran, Sabah</p>
+                </div>
+            </div>
+            <div class="text-right sm:text-left">
+                <span class="bg-slate-800 text-slate-300 text-xs px-3 py-1.5 rounded-full border border-slate-700">Mod Responden Aktif</span>
+            </div>
+        </div>
+    </header>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-3 no-print"></div>
+
+    <main class="max-w-6xl w-full mx-auto px-4 py-8 flex-grow">
+
+        <section id="step-demografi" class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 md:p-10 transition-all duration-300">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-8">
+                    <span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">Fasa 1: Persiapan & Etika</span>
+                    <h2 class="text-3xl font-extrabold text-slate-900 mt-4 leading-tight">Informed Consent & Profil Responden</h2>
+                    <p class="text-slate-500 mt-2">Sila lengkapkan profil anda dan baca kenyataan persetujuan sebelum memulakan ujian.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Nama / Nama Samaran Responden</label>
+                        <input type="text" id="resp-nama" placeholder="Sila gunakan nama samaran (cth: Responden A)" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Tingkatan / Aliran</label>
+                        <input type="text" id="resp-tingkatan" placeholder="Contoh: Tingkatan 5 Aliran Sains" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Jantina</label>
+                        <select id="resp-gender" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                            <option value="Lelaki">Lelaki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Pentadbir Ujian (Nama Anda)</label>
+                        <input type="text" id="resp-penguji" placeholder="Nama Pelajar IPG" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-6 max-h-60 overflow-y-auto text-xs text-slate-600 space-y-3 shadow-inner">
+                    <p class="font-bold text-slate-800 text-sm">PERNYATAAN PERSETUJUAN TERMAKLUM (INFORMED CONSENT)</p>
+                    <p>1. Aktiviti pentaksiran psikometrik ini dijalankan bertujuan memenuhi keperluan akademik bagi kursus PBKK2022 (Pengujian dan Pentaksiran dalam Bimbingan dan Kaunseling di Sekolah).</p>
+                    <p>2. Segala maklumat peribadi, skor mentah, dan profil keputusan ujian murid adalah SULIT dan hanya digunakan untuk tujuan penulisan laporan akademik ini sahaja.</p>
+                    <p>3. Penglibatan murid dalam aktiviti ini adalah bersifat sukarela sepenuhnya dan berhak menarik diri pada bila-bila masa.</p>
+                    <p>4. Dengan menandakan kotak di bawah, anda memberikan keizinan kepada pentadbir untuk memproses jawapan anda demi tujuan analisis data psikometrik.</p>
+                </div>
+
+                <div class="flex items-start gap-3 mb-8">
+                    <input type="checkbox" id="consent-check" class="mt-1 h-5 w-5 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                    <label for="consent-check" class="text-sm text-slate-600 leading-tight select-none cursor-pointer">Saya memahami kenyataan di atas dan secara sukarela bersetuju membenarkan data saya digunakan untuk tujuan tugasan akademik ini.</label>
+                </div>
+
+                <button onclick="mulaiUjian()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-blue-500/20 text-sm tracking-wide">
+                    Mulai Pentaksiran Sekarang →
+                </button>
+            </div>
+        </section>
+
+        <section id="step-ips" class="hidden bg-white rounded-3xl shadow-sm border border-slate-100 p-6 md:p-10 transition-all duration-300">
+            <div class="border-b border-slate-100 pb-5 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <span class="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">Bahagian 2</span>
+                    <h2 class="text-2xl font-bold text-slate-900 mt-2">Inventori Tret Personaliti Sidek (IPS)</h2>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-slate-400">Kemajuan IPS</p>
+                    <p class="font-bold text-lg text-indigo-600" id="ips-progress-text">0 / 160 Soalan</p>
+                </div>
+            </div>
+
+            <div class="w-full bg-slate-100 h-2 rounded-full mb-8">
+                <div id="ips-progress-bar" class="bg-indigo-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <p class="text-sm text-slate-500 bg-slate-50 p-4 rounded-xl mb-6">
+                📝 <b>Arahan:</b> Sila pilih jawapan bagi setiap pernyataan di bawah yang menerangkan ciri diri anda dengan betul.
+            </p>
+
+            <div id="ips-paginated-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+            <div class="mt-10 pt-6 border-t border-slate-100 flex justify-between items-center">
+                <button id="ips-prev-btn" onclick="navigasiIPS(-1)" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl transition">
+                    ← Halaman Sebelumnya
+                </button>
+                <span id="ips-page-indicator" class="text-sm text-slate-500 font-medium">Halaman 1 dari 8</span>
+                <button id="ips-next-btn" onclick="navigasiIPS(1)" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition shadow-md">
+                    Halaman Seterusnya →
+                </button>
+            </div>
+        </section>
+
+        <section id="step-imk" class="hidden bg-white rounded-3xl shadow-sm border border-slate-100 p-6 md:p-10 transition-all duration-300">
+            <div class="border-b border-slate-100 pb-5 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">Bahagian 3</span>
+                    <h2 class="text-2xl font-bold text-slate-900 mt-2">Inventori Minat Kerjaya Holland (SDS)</h2>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-slate-400">Kemajuan IMK</p>
+                    <p class="font-bold text-lg text-emerald-600" id="imk-progress-text">0 / 192 Soalan</p>
+                </div>
+            </div>
+
+            <div class="w-full bg-slate-100 h-2 rounded-full mb-8">
+                <div id="imk-progress-bar" class="bg-emerald-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <p class="text-sm text-slate-500 bg-slate-50 p-4 rounded-xl mb-6">
+                📝 <b>Arahan:</b> Sila tandakan maklum balas bagi setiap pernyataan di bawah yang menggambarkan minat, kecenderungan, atau kesukaan anda.
+            </p>
+
+            <div id="imk-paginated-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+            <div class="mt-10 pt-6 border-t border-slate-100 flex justify-between items-center">
+                <button id="imk-prev-btn" onclick="navigasiIMK(-1)" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl transition">
+                    ← Halaman Sebelumnya
+                </button>
+                <span id="imk-page-indicator" class="text-sm text-slate-500 font-medium">Halaman 1 dari 8</span>
+                <button id="imk-next-btn" onclick="navigasiIMK(1)" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition shadow-md">
+                    Halaman Seterusnya →
+                </button>
+            </div>
+        </section>
+
+        <section id="step-laporan" class="hidden space-y-8">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div>
+                    <span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">Bahagian 4: Dashboard Hasil</span>
+                    <h2 class="text-3xl font-extrabold text-slate-900 mt-3">Laporan Analisis Pentaksiran Psikometrik</h2>
+                    <p class="text-slate-500 mt-1">Sila simpan data atau hantar ke sistem awan Formspree di bawah.</p>
+                </div>
+                <div class="flex flex-wrap gap-2.5 no-print">
+                    <button id="btn-formspree" onclick="hantarFormspree()" class="px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition shadow-md flex items-center gap-2 text-sm">
+                        🚀 Hantar Data ke Formspree (E-mel)
+                    </button>
+                    <button onclick="window.print()" class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl transition shadow-md flex items-center gap-2 text-sm">
+                        🖨️ Cetak / Simpan PDF
+                    </button>
+                    <button onclick="resetAplikasi()" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-xl transition text-sm">
+                        Reset Data
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm">
+                <h3 class="text-xs font-bold text-slate-400 mb-4 tracking-wider uppercase">Profil Maklumat Responden</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+                    <div>
+                        <p class="text-xs text-slate-400 font-semibold">NAMA RESPONDEN (SAMARAN)</p>
+                        <p id="lap-nama" class="font-bold text-slate-800 mt-1">-</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-400 font-semibold">TINGKATAN / ALIRAN</p>
+                        <p id="lap-tingkatan" class="font-bold text-slate-800 mt-1">-</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-400 font-semibold">JANTINA</p>
+                        <p id="lap-gender" class="font-bold text-slate-800 mt-1">-</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-400 font-semibold">NAMA PENTADBIR UJIAN</p>
+                        <p id="lap-penguji" class="font-bold text-slate-800 mt-1">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm print-page">
+                <div class="border-b pb-4 mb-6">
+                    <h3 class="text-xl font-bold text-slate-900">Analisis Data IMK (RIASEK)</h3>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <canvas id="chart-imk" class="max-h-72"></canvas>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-emerald-50 rounded-2xl p-5 border border-emerald-100">
+                            <p class="text-xs font-bold text-emerald-800">KOD TIGA MATA HOLLAND DOMINAN</p>
+                            <p id="lap-kod-holland" class="text-4xl font-extrabold text-emerald-600 mt-1">-</p>
+                        </div>
+                        <div>
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-xs text-slate-400 font-bold border-b">
+                                    <tr>
+                                        <th class="pb-2">KONSTRUK HOLLAND</th>
+                                        <th class="pb-2 text-center">SKOR MENTAH (MAX 32)</th>
+                                        <th class="pb-2 text-center">KEDUDUKAN</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-imk-rows"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm print-page">
+                <div class="border-b pb-4 mb-6">
+                    <h3 class="text-xl font-bold text-slate-900">Analisis Data Personaliti (IPS)</h3>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <canvas id="chart-ips" class="max-h-80"></canvas>
+                    </div>
+                    <div>
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-slate-400 font-bold border-b">
+                                <tr>
+                                    <th class="pb-2">TRET PERSONALITI</th>
+                                    <th class="pb-2 text-center">PERATUSAN (%)</th>
+                                    <th class="pb-2 text-center">TAHAP</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-ips-rows"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm print-page">
+                <h3 class="text-xl font-bold text-slate-900 border-b pb-4 mb-4">Interpretasi & Perbincangan Kritis</h3>
+                <div id="analisis-teks" class="space-y-4 text-sm text-slate-700 leading-relaxed"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal-container" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 transform transition-all scale-95 duration-200">
+            <h3 class="text-lg font-bold text-slate-900" id="modal-title">-</h3>
+            <p class="text-slate-600 text-sm mt-2" id="modal-desc">-</p>
+            <div class="flex gap-3 mt-6 justify-end">
+                <button id="modal-btn-cancel" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold rounded-xl transition"></button>
+                <button id="modal-btn-confirm" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition shadow-md"></button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs no-print">
+        <p>© 2026 Pentaksiran Psikometrik Bimbingan & Kaunseling IPG Kampus Kent.</p>
+    </footer>
+
+    <script>
+        // Sila gantikan ID di bawah dengan Form ID unik daripada Formspree anda
+        const FORMSPREE_ENDPOINT = "BERIKAN_ENDPOINT_FORMSPREE_ANDA_DI_SINI";
+
+        const imkDataPool = [];
+        const cats = ['R', 'I', 'A', 'S', 'E', 'K'];
+        const imkTexts = [
+            "Membaiki alat-alat elektrik", "Membaiki alat-alat mekanik", "Membuat benda daripada kayu", "Memandu trak atau traktor", "Mengikuti kursus Lukisan Mekanik", "Menggunakan alat-alat kerja logam", "Mengubahsuai enjin kenderaan", "Mengikuti kursus Seni Perusahaan", "Mengikuti kursus Kerja Kayu", "Mengikuti kursus Automekanik", "Mengendali mesin jentera rigid", "Bekerja di kilang pemasangan", "Membina model reka bentuk fizikal", "Membaiki perkakas sistem perpaipan", "Menggunakan perkakasan tangan", "Bekerja luar rumah dalam landskap",
+            "Membaca buku sains", "Bekerja dalam makmal penyelidikan", "Membuat kerja projek sains", "Merekacipta model teknologi roket", "Bekerja menggunakan alat kimia", "Membaca subjek teori yang khusus", "Mengikuti kursus Fizik", "Mengikuti kursus Kimia", "Mengikuti kursus Geometri", "Mengikuti kursus Biologi", "Meneliti formula data matematik", "Mengkaji fungsi sistem ekologi", "Menganalisis sampel di mikroskop", "Membaca jurnal perubatan", "Menyelesaikan masalah logik", "Melakukan eksperimen sains komputer",
+            "Melakar, melukis atau mewarna", "Menonton lakonan / drama pentas", "Mereka bentuk seni bina dalaman", "Bermain alat muzik dalam band", "Berlatih kemahiran alat muzik", "Menghadiri pertunjukan seni", "Mencipta potret seni foto", "Membaca buku lakonan drama", "Membaca atau menulis sajak puisi", "Mengikuti kursus seni lukis grafik", "Menulis cerita pendek novel", "Menghias ruang pameran pentas", "Mencipta lirik lagu komposer", "Melakukan tarian balet moden", "Mengukir patung arca kreatif", "Menyertai aktiviti teater sekolah",
+            "Menulis surat pada kawan", "Menghadiri perjumpaan komuniti", "Menganggotai kelab khidmat sosial", "Menolong orang yang ada masalah", "Mengajar kanak-kanak membaca", "Menghadiri majlis keramaian", "Melakukan aktiviti kerja kebajikan", "Menghadiri persidangan seminar", "Menyertai aktiviti sukan jemaah", "Memulakan ikatan persahabatan", "Membimbing remaja bermasalah", "Melayan warga tua di pondok", "Menjadi sukarelawan bantuan bencana", "Mengajar kelas tuisyen komuniti", "Mendengar luahan emosi rakan", "Merancang program amal sekolah",
+            "Mempengaruhi keputusan orang lain", "Berbincang mengenai isu politik", "Menguruskan perniagaan sendiri", "Menghadiri persidangan agensi", "Memberi ceramah motivasi umum", "Menjadi pemimpin kumpulan organisasi", "Menyelia kerja-kerja orang bawah", "Menemui tokoh usahawan penting", "Mengetuai matlamat strategik", "Mengambil bahagian dalam kempen", "Menjual barangan perkhidmatan", "Menjadi pengurus projek komersial", "Berunding kontrak perdagangan", "Menganjurkan kempen pemasaran", "Membuka cawangan kedai baru", "Memimpin persatuan usahawan muda",
+            "Menaip bahan bertulis rasmi", "Mengira lejar urusan perniagaan", "Menggunakan mesin fail data", "Menyimpan rekod perbelanjaan", "Mengikuti kursus simpan kira", "Mengikuti kursus perniagaan digital", "Mengikuti kursus matematik akaun", "Mengikuti kursus perkeranian", "Menyimpan surat laporan rasmi", "Menulis dokumen invois niaga", "Menyusun sistem pangkalan data", "Menyemak penyata akaun bank", "Mengurus inventori stok kedai", "Merekod minit mesyuarat rasmi", "Memproses borang pendaftaran", "Memastikan pematuhan undang-undang data"
+        ];
+
+        let itemCounter = 1;
+        for(let c = 0; c < 6; c++) {
+            for(let i = 0; i < 32; i++) {
+                imkDataPool.push({ id: itemCounter, text: imkTexts[c * 16 + (i % 16)] + ` (${cats[c]}${i+1})`, cat: cats[c] });
+                itemCounter++;
+            }
+        }
+
+        const ipsDataPool = [];
+        const ipsCats = ['EKS', 'ANA', 'STR', 'PCP', 'TLG', 'AUT', 'ITL', 'MGL', 'AGR', 'BSD', 'KPL', 'THN', 'KRD', 'SOK', 'INT', 'TPU'];
+        const ipsTexts = [
+            "Selesa berkongsi fikiran secara terbuka bersama rakan.",
+            "Suka menganalisis situasi persekitaran secara kritikal.",
+            "Sangat mementingkan kekemasan dan keteraturan kerja.",
+            "Mempunyai dorongan yang sangat tinggi untuk mencapai kejayaan.",
+            "Sentiasa berjiwa kebajikan dan suka menolong orang lain.",
+            "Lebih suka membuat keputusan mengikut cara sendiri tanpa kawalan.",
+            "Gemar kepada aktiviti stimulasi minda dan falsafah abstrak.",
+            "Suka memimpin, mengarah dan mengawal organisasi kumpulan.",
+            "Bersikap asertif, tegas diri dan berani menyatakan pandangan.",
+            "Memerlukan sokongan, bimbingan dan dorongan rakan karib.",
+            "Suka akan cabaran, kepelbagaian dan situasi pengalaman baharu.",
+            "Sangat gigih, tabah dan tidak mudah putus asa menghadapi halangan.",
+            "Sering menilai kekurangan diri secara kritis dan bermuhasabah.",
+            "Mengharapkan perhatian, sokongan dan pengiktirafan luaran.",
+            "Lebih selesa bersendirian berbanding berada dalam kumpulan besar.",
+            "Sepanjang ingatan saya, saya tidak pernah berbohong atau meradang."
+        ];
+
+        let ipsCounter = 1;
+        for(let t = 0; t < 16; t++) {
+            for(let i = 0; i < 10; i++) {
+                ipsDataPool.push({ id: ipsCounter, text: ipsTexts[t] + ` (Siri ${i+1})`, cat: ipsCats[t] });
+                ipsCounter++;
+            }
+        }
+
+        const userAnswersIMK = {};
+        const userAnswersIPS = {};
+        let currentStep = 'demografi';
+        let imkPage = 1; const imkItemsPerPage = 24;
+        let ipsPage = 1; const ipsItemsPerPage = 20;
+        let chartIMKInstance = null; let chartIPSInstance = null;
+        let dataGlobalEksport = {}; // Simpan objek untuk Formspree
+
+        for(let i=1; i<=192; i++) { userAnswersIMK[i] = null; }
+        for(let i=1; i<=160; i++) { userAnswersIPS[i] = null; }
+
+        function checkSavedDraft() {
+            const savedIMK = localStorage.getItem('draft_userAnswersIMK');
+            const savedIPS = localStorage.getItem('draft_userAnswersIPS');
+            const savedDemografi = localStorage.getItem('draft_demografi');
+
+            if (savedIMK || savedIPS || savedDemografi) {
+                showModal(
+                    "Sistem Pemulihan Draf",
+                    "Terdapat draf respons yang belum diselesaikan daripada sesi pengujian sebelum ini. Adakah anda mahu memulihkan draf tersebut?",
+                    "Mula Baharu",
+                    "Pulihkan Draf",
+                    () => { localStorage.clear(); hideModal(); showToast("Sesi baharu bermula.", "info"); },
+                    () => {
+                        if (savedIMK) Object.assign(userAnswersIMK, JSON.parse(savedIMK));
+                        if (savedIPS) Object.assign(userAnswersIPS, JSON.parse(savedIPS));
+                        if (savedDemografi) {
+                            const d = JSON.parse(savedDemografi);
+                            document.getElementById('resp-nama').value = d.nama || "";
+                            document.getElementById('resp-tingkatan').value = d.tingkatan || "";
+                            document.getElementById('resp-gender').value = d.gender || "Lelaki";
+                            document.getElementById('resp-penguji').value = d.penguji || "";
+                        }
+                        hideModal(); renderIPSPage(); renderIMKPage(); showToast("Draf digital berjaya dipulihkan!", "success");
+                    }
+                );
+            }
+        }
+
+        function autoSaveState() {
+            localStorage.setItem('draft_userAnswersIMK', JSON.stringify(userAnswersIMK));
+            localStorage.setItem('draft_userAnswersIPS', JSON.stringify(userAnswersIPS));
+            const d = {
+                nama: document.getElementById('resp-nama').value.trim(),
+                tingkatan: document.getElementById('resp-tingkatan').value.trim(),
+                gender: document.getElementById('resp-gender').value,
+                penguji: document.getElementById('resp-penguji').value.trim()
+            };
+            localStorage.setItem('draft_demografi', JSON.stringify(d));
+        }
+
+        let modalConfirmCallback = null; let modalCancelCallback = null;
+        function showModal(title, desc, cancelText, confirmText, onCancel, onConfirm) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            const cBtn = document.getElementById('modal-btn-cancel');
+            const fBtn = document.getElementById('modal-btn-confirm');
+            cBtn.innerText = cancelText; fBtn.innerText = confirmText;
+            modalCancelCallback = onCancel; modalConfirmCallback = onConfirm;
+            cBtn.onclick = () => { if(modalCancelCallback) modalCancelCallback(); };
+            fBtn.onclick = () => { if(modalConfirmCallback) modalConfirmCallback(); };
+            document.getElementById('modal-container').classList.remove('hidden');
+        }
+        function hideModal() { document.getElementById('modal-container').classList.add('hidden'); }
+
+        function renderIPSPage() {
+            const container = document.getElementById('ips-paginated-container');
+            container.innerHTML = "";
+            const start = (ipsPage - 1) * ipsItemsPerPage;
+            const pageItems = ipsDataPool.slice(start, start + ipsItemsPerPage);
+
+            pageItems.forEach(item => {
+                const isYa = userAnswersIPS[item.id] === 'YA';
+                const isTidak = userAnswersIPS[item.id] === 'TIDAK';
+                const card = document.createElement('div');
+                card.id = `ips-card-${item.id}`;
+                card.className = `flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white rounded-xl border ${userAnswersIPS[item.id] === null ? 'border-slate-100' : 'border-slate-200 shadow-sm'} hover:shadow-sm transition gap-4`;
+                card.innerHTML = `
+                    <div class="flex-1">
+                        <span class="text-xs font-bold text-slate-400 block mb-0.5">ITEM ${item.id}</span>
+                        <p class="text-sm font-medium text-slate-800">${item.text}</p>
+                    </div>
+                    <div class="flex gap-2 self-end sm:self-auto">
+                        <button onclick="setJawapanIPS(${item.id}, 'YA')" class="px-4 py-2 border rounded-lg text-xs font-bold tracking-wider transition ${isYa ? 'option-active-ya' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}">YA</button>
+                        <button onclick="setJawapanIPS(${item.id}, 'TIDAK')" class="px-4 py-2 border rounded-lg text-xs font-bold tracking-wider transition ${isTidak ? 'option-active-tidak' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}">TIDAK</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            document.getElementById('ips-page-indicator').innerText = `Halaman ${ipsPage} dari 8`;
+            document.getElementById('ips-prev-btn').disabled = ipsPage === 1;
+            document.getElementById('ips-prev-btn').style.opacity = ipsPage === 1 ? "0.5" : "1";
+            updateProgressIPS();
+        }
+
+        function setJawapanIPS(id, val) { userAnswersIPS[id] = val; autoSaveState(); renderIPSPage(); }
+        function updateProgressIPS() {
+            let ans = 0; for(let i=1; i<=160; i++) { if(userAnswersIPS[i] !== null) ans++; }
+            const pct = Math.round((ans / 160) * 100);
+            document.getElementById('ips-progress-bar').style.width = `${pct}%`;
+            document.getElementById('ips-progress-text').innerText = `${ans} / 160 Item`;
+        }
+
+        function navigasiIPS(dir) {
+            const start = (ipsPage - 1) * ipsItemsPerPage;
+            let missing = [];
+            for (let i = start + 1; i <= start + ipsItemsPerPage; i++) {
+                if (userAnswersIPS[i] === null) {
+                    missing.push(i);
+                    const el = document.getElementById(`ips-card-${i}`);
+                    if (el) el.className = "flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-red-50/30 rounded-xl border border-red-400 shadow-sm transition gap-4";
+                }
+            }
+            if (dir === 1 && missing.length > 0) {
+                showToast(`Sila berikan maklum balas bagi item: ${missing.join(', ')} untuk mencegah data ralat.`, 'warning');
+                return;
+            }
+            if (ipsPage === 8 && dir === 1) {
+                document.getElementById('step-ips').className = "hidden";
+                document.getElementById('step-imk').className = "block bg-white rounded-3xl shadow-sm border border-slate-100 p-6 md:p-10 transition-all duration-300";
+                currentStep = 'imk'; renderIMKPage(); window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+            ipsPage += dir; renderIPSPage(); window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderIMKPage() {
+            const container = document.getElementById('imk-paginated-container');
+            container.innerHTML = "";
+            const start = (imkPage - 1) * imkItemsPerPage;
+            const pageItems = imkDataPool.slice(start, start + imkItemsPerPage);
+
+            pageItems.forEach(item => {
+                const isYa = userAnswersIMK[item.id] === 'YA';
+                const isTidak = userAnswersIMK[item.id] === 'TIDAK';
+                const card = document.createElement('div');
+                card.id = `imk-card-${item.id}`;
+                card.className = `flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white rounded-xl border ${userAnswersIMK[item.id] === null ? 'border-slate-100' : 'border-slate-200 shadow-sm'} hover:shadow-sm transition gap-4`;
+                card.innerHTML = `
+                    <div class="flex-1">
+                        <span class="text-xs font-bold text-slate-400 block mb-0.5">ITEM ${item.id}</span>
+                        <p class="text-sm font-medium text-slate-800">${item.text}</p>
+                    </div>
+                    <div class="flex gap-2 self-end sm:self-auto">
+                        <button onclick="setJawapanIMK(${item.id}, 'YA')" class="px-4 py-2 border rounded-lg text-xs font-bold tracking-wider transition ${isYa ? 'option-active-ya' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}">YA</button>
+                        <button onclick="setJawapanIMK(${item.id}, 'TIDAK')" class="px-4 py-2 border rounded-lg text-xs font-bold tracking-wider transition ${isTidak ? 'option-active-tidak' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}">TIDAK</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            document.getElementById('imk-page-indicator').innerText = `Halaman ${imkPage} dari 8`;
+            document.getElementById('imk-prev-btn').disabled = imkPage === 1;
+            document.getElementById('imk-prev-btn').style.opacity = imkPage === 1 ? "0.5" : "1";
+            updateProgressIMK();
+        }
+
+        function setJawapanIMK(id, val) { userAnswersIMK[id] = val; autoSaveState(); renderIMKPage(); }
+        function updateProgressIMK() {
+            let ans = 0; for(let i=1; i<=192; i++) { if(userAnswersIMK[i] !== null) ans++; }
+            const pct = Math.round((ans / 192) * 100);
+            document.getElementById('imk-progress-bar').style.width = `${pct}%`;
+            document.getElementById('imk-progress-text').innerText = `${ans} / 192 Item`;
+        }
+
+        function navigasiIMK(dir) {
+            const start = (imkPage - 1) * imkItemsPerPage;
+            let missing = [];
+            for (let i = start + 1; i <= start + imkItemsPerPage; i++) {
+                if (userAnswersIMK[i] === null) {
+                    missing.push(i);
+                    const el = document.getElementById(`imk-card-${i}`);
+                    if (el) el.className = "flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-red-50/30 rounded-xl border border-red-400 shadow-sm transition gap-4";
+                }
+            }
+            if (dir === 1 && missing.length > 0) {
+                showToast(`Sila berikan maklum balas bagi item: ${missing.join(', ')} untuk mencegah data ralat.`, 'warning');
+                return;
+            }
+            if (imkPage === 8 && dir === 1) {
+                prosesHasilAkhir(); return;
+            }
+            imkPage += dir; renderIMKPage(); window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = `p-4 rounded-xl shadow-lg border text-xs font-semibold flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-300 ${type === 'warning' ? 'bg-amber-50 border-amber-200 text-amber-800' : type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-blue-50 border-blue-200 text-blue-800'}`;
+            t.innerHTML = `<span>⚡</span> <p>${msg}</p>`;
+            container.appendChild(t);
+            setTimeout(() => t.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => { t.classList.add('translate-y-2', 'opacity-0'); setTimeout(() => t.remove(), 300); }, 4000);
+        }
+
+        function mulaiUjian() {
+            const c = document.getElementById('consent-check').checked;
+            const n = document.getElementById('resp-nama').value.trim();
+            const t = document.getElementById('resp-tingkatan').value.trim();
+            if (!n || !t) { showToast("Sila lengkapkan profil demografi responden terlebih dahulu.", "warning"); return; }
+            if (!c) { showToast("Sila berikan Persetujuan Termaklum sebelum mula.", "warning"); return; }
+            document.getElementById('step-demografi').className = "hidden";
+            document.getElementById('step-ips').className = "block bg-white rounded-3xl shadow-sm border border-slate-100 p-6 md:p-10 transition";
+            currentStep = 'ips'; renderIPSPage(); window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function prosesHasilAkhir() {
+            const n = document.getElementById('resp-nama').value.trim() || "Responden";
+            const t = document.getElementById('resp-tingkatan').value.trim() || "Tingkatan 5";
+            const g = document.getElementById('resp-gender').value;
+            const p = document.getElementById('resp-penguji').value.trim() || "Pengkaji";
+
+            document.getElementById('lap-nama').innerText = n;
+            document.getElementById('lap-tingkatan').innerText = t;
+            document.getElementById('lap-gender').innerText = g;
+            document.getElementById('lap-penguji').innerText = p;
+
+            const imkScores = { R: 0, I: 0, A: 0, S: 0, E: 0, K: 0 };
+            imkDataPool.forEach(item => { if (userAnswersIMK[item.id] === 'YA') imkScores[item.cat]++; });
+            const sortedImk = Object.entries(imkScores).sort((a, b) => b[1] - a[1]);
+            const code = sortedImk.slice(0, 3).map(x => x[0]).join('');
+            document.getElementById('lap-kod-holland').innerText = code;
+
+            const tIMK = document.getElementById('table-imk-rows'); tIMK.innerHTML = "";
+            sortedImk.forEach(([k, v], idx) => {
+                const tr = document.createElement('tr'); tr.className = "border-b text-xs sm:text-sm";
+                tr.innerHTML = `<td class="py-3 font-semibold">${k}</td><td class="py-3 text-center">${v}</td><td class="py-3 text-center font-bold text-blue-600">${idx+1}</td>`;
+                tIMK.appendChild(tr);
+            });
+
+            const ipsScores = { AGR: 0, ANA: 0, AUT: 0, BSD: 0, EKS: 0, ITL: 0, INT: 0, KPL: 0, THN: 0, KRD: 0, MGL: 0, TLG: 0, SOK: 0, STR: 0, PCP: 0, TPU: 0 };
+            ipsDataPool.forEach(item => { if (userAnswersIPS[item.id] === 'YA') ipsScores[item.cat]++; });
+
+            const tIPS = document.getElementById('table-ips-rows'); tIPS.innerHTML = "";
+            const labelsIPS = []; const dataIPS = [];
+            const ringkasanPeratusIPS = {};
+
+            for (const k in ipsScores) {
+                const pct = ipsScores[k] * 10; labelsIPS.push(k); dataIPS.push(pct);
+                ringkasanPeratusIPS[k] = `${pct}%`;
+                let lvl = "Sederhana", clss = "bg-amber-50 text-amber-700 border-amber-100";
+                if(pct >= 70) { lvl = "Tinggi"; clss = "bg-emerald-50 text-emerald-700 border-emerald-100"; }
+                else if(pct <= 30) { lvl = "Rendah"; clss = "bg-slate-100 text-slate-600 border-slate-200"; }
+                const tr = document.createElement('tr'); tr.className = "border-b text-xs sm:text-sm";
+                tr.innerHTML = `<td class="py-2.5 font-semibold">${k}</td><td class="py-2.5 text-center font-bold">${pct}%</td><td class="py-2.5 text-center"><span class="px-2.5 py-0.5 rounded-full border text-xs font-bold ${clss}">${lvl}</span></td>`;
+                tIPS.appendChild(tr);
+            }
+
+            renderCharts(imkScores, labelsIPS, dataIPS);
+            document.getElementById('analisis-teks').innerHTML = `
+                <p><b>1. Kebolehpercayaan Profil (Skala Penipuan - TPU):</b> Skor TPU adalah sebanyak ${ipsScores.TPU * 10}%. Tahap di bawah 50% membuktikan jawapan yang diberikan oleh responden adalah jujur, telus, dan mempunyai darjah kesahan data yang tinggi.</p>
+                <p class="mt-2"><b>2. Analisis Silang Teoretikal:</b> Gabungan struktur minat <b>${code}</b> bersama kelompok personaliti utama memberikan landasan transformatif yang kukuh untuk perancangan kerjaya bibrid masa depan responden.</p>
+            `;
+
+            // Pekkan data global siap sedia untuk Formspree
+            dataGlobalEksport = {
+                Responden_Nama: n,
+                Responden_Tingkatan: t,
+                Responden_Jantina: g,
+                Pentadbir_Ujian: p,
+                IMK_Kod_Holland: code,
+                IMK_Skor_Mentah: JSON.stringify(imkScores),
+                IPS_Skor_Peratus: JSON.stringify(ringkasanPeratusIPS)
+            };
+
+            document.getElementById('step-imk').className = "hidden";
+            document.getElementById('step-laporan').className = "block space-y-8";
+            localStorage.clear(); window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderCharts(imk, labels, data) {
+            if (chartIMKInstance) chartIMKInstance.destroy();
+            if (chartIPSInstance) chartIPSInstance.destroy();
+            chartIMKInstance = new Chart(document.getElementById('chart-imk').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['R', 'I', 'A', 'S', 'E', 'K'],
+                    datasets: [{ data: [imk.R, imk.I, imk.A, imk.S, imk.E, imk.K], backgroundColor: '#365F91', borderRadius: 4 }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 32 } } }
+            });
+            chartIPSInstance = new Chart(document.getElementById('chart-ips').getContext('2d'), {
+                type: 'bar',
+                data: { labels: labels, datasets: [{ data: data, backgroundColor: '#1F497D', borderRadius: 4 }] },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+        }
+
+       function hantarFormspree() {
+            const btn = document.getElementById('btn-formspree');
+            
+            // Menyemak jika pengguna belum menukar ID asal atau biarkan kosong
+            if (FORMSPREE_ENDPOINT === "mnjyrooo" || !FORMSPREE_ENDPOINT) {
+                showToast("Ralat: Sila pastikan konfigurasi Formspree ID anda telah disemak dengan betul.", "warning");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "⏳ Sedang Menghantar Data...";
+
+            fetch(`https://formspree.io/f/${FORMSPREE_ENDPOINT}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(dataGlobalEksport)
+            })
+            .then(response => {
+                if (response.ok) {
+                    showToast("Data psikometrik berjaya dihantar dan disimpan di Formspree!", "success");
+                    btn.innerText = "✅ Data Berjaya Dihantar";
+                    btn.className = "px-5 py-3 bg-emerald-600 text-white font-semibold rounded-xl cursor-not-allowed text-sm flex items-center gap-2";
+                } else {
+                    throw new Error("Penghantaran gagal");
+                }
+            })
+            .catch(error => {
+                showToast("Gagal menghantar data. Sila semak sambungan internet anda.", "warning");
+                btn.disabled = false;
+                btn.innerText = "🚀 Cuba Hantar Semula";
+            });
+        }
+
+        function resetAplikasi() { location.reload(); }
+        window.onload = function () { checkSavedDraft(); }
+    </script>
+</body>
+</html>
