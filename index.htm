@@ -96,12 +96,15 @@
                     <label for="consent-check" class="text-sm text-slate-600 leading-tight select-none cursor-pointer">Saya memahami kenyataan di atas dan secara sukarela bersetuju membenarkan data saya digunakan untuk tujuan tugasan akademik ini.</label>
                 </div>
 
-                <button onclick="mulaiUjian()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-blue-500/20 text-sm tracking-wide">
-                    Mulai Pentaksiran Sekarang →
-                </button>
-     <button type="button" onclick="pintasJawabSemua()" class="w-full mt-2 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition text-xs no-print">
-    🧪 Mod Penguji: Isi Semua Jawapan Automatik & Lihat Laporan
-</button>   
+                <div class="space-y-3">
+                    <button onclick="mulaiUjian()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-blue-500/20 text-sm tracking-wide">
+                        Mulai Pentaksiran Sekarang →
+                    </button>
+                    
+                    <button type="button" onclick="pintasJawabSemua()" class="w-full py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition text-xs no-print">
+                        🧪 Mod Penguji: Isi Semua Jawapan Automatik & Lihat Laporan
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -288,8 +291,8 @@
     </footer>
 
     <script>
-        // Sila gantikan ID di bawah dengan Form ID unik daripada Formspree anda
-        const FORMSPREE_ENDPOINT = "BERIKAN_ENDPOINT_FORMSPREE_ANDA_DI_SINI";
+        // Pangkalan data Formspree unik yang telah dikunci
+        const FORMSPREE_ENDPOINT = "mnjyrooo";
 
         const imkDataPool = [];
         const cats = ['R', 'I', 'A', 'S', 'E', 'K'];
@@ -310,6 +313,7 @@
             }
         }
 
+        // 16 Tret IPS Mutlak mengikut Manual Penilaian Standard
         const ipsDataPool = [];
         const ipsCats = ['EKS', 'ANA', 'STR', 'PCP', 'TLG', 'AUT', 'ITL', 'MGL', 'AGR', 'BSD', 'KPL', 'THN', 'KRD', 'SOK', 'INT', 'TPU'];
         const ipsTexts = [
@@ -324,7 +328,7 @@
             "Bersikap asertif, tegas diri dan berani menyatakan pandangan.",
             "Memerlukan sokongan, bimbingan dan dorongan rakan karib.",
             "Suka akan cabaran, kepelbagaian dan situasi pengalaman baharu.",
-            "Sangat gigih, tabah dan tidak mudah putus asa menghadapi halangan.",
+            "Sangat gigih, tabah dan tidak mudah putas asa menghadapi halangan.",
             "Sering menilai kekurangan diri secara kritis dan bermuhasabah.",
             "Mengharapkan perhatian, sokongan dan pengiktirafan luaran.",
             "Lebih selesa bersendirian berbanding berada dalam kumpulan besar.",
@@ -345,7 +349,7 @@
         let imkPage = 1; const imkItemsPerPage = 24;
         let ipsPage = 1; const ipsItemsPerPage = 20;
         let chartIMKInstance = null; let chartIPSInstance = null;
-        let dataGlobalEksport = {}; // Simpan objek untuk Formspree
+        let dataGlobalEksport = {}; 
 
         for(let i=1; i<=192; i++) { userAnswersIMK[i] = null; }
         for(let i=1; i<=160; i++) { userAnswersIPS[i] = null; }
@@ -372,7 +376,7 @@
                             document.getElementById('resp-gender').value = d.gender || "Lelaki";
                             document.getElementById('resp-penguji').value = d.penguji || "";
                         }
-                        hideModal(); renderIPSPage(); renderIMKPage(); showToast("Draf digital berjaya dipulihkan!", "success");
+                        hideModal(); renderIPSPage(); renderIMKPage(); showToast("Draf digital dikesan and berjaya dipulihkan!", "success");
                     }
                 );
             }
@@ -545,10 +549,10 @@
         }
 
         function prosesHasilAkhir() {
-            const n = document.getElementById('resp-nama').value.trim() || "Responden";
-            const t = document.getElementById('resp-tingkatan').value.trim() || "Tingkatan 5";
+            const n = document.getElementById('resp-nama').value.trim() || "Ayesha (Kajian Kes)";
+            const t = document.getElementById('resp-tingkatan').value.trim() || "5 STEM A";
             const g = document.getElementById('resp-gender').value;
-            const p = document.getElementById('resp-penguji').value.trim() || "Pengkaji";
+            const p = document.getElementById('resp-penguji').value.trim() || "Nurul Syahfirah";
 
             document.getElementById('lap-nama').innerText = n;
             document.getElementById('lap-tingkatan').innerText = t;
@@ -592,7 +596,6 @@
                 <p class="mt-2"><b>2. Analisis Silang Teoretikal:</b> Gabungan struktur minat <b>${code}</b> bersama kelompok personaliti utama memberikan landasan transformatif yang kukuh untuk perancangan kerjaya bibrid masa depan responden.</p>
             `;
 
-            // Pekkan data global siap sedia untuk Formspree
             dataGlobalEksport = {
                 Responden_Nama: n,
                 Responden_Tingkatan: t,
@@ -626,13 +629,10 @@
             });
         }
 
-       function hantarFormspree() {
+        function hantarFormspree() {
             const btn = document.getElementById('btn-formspree');
-            
-            // Menyemak jika pengguna belum menukar ID asal atau biarkan kosong
             if (FORMSPREE_ENDPOINT === "mnjyrooo" || !FORMSPREE_ENDPOINT) {
-                showToast("Ralat: Sila pastikan konfigurasi Formspree ID anda telah disemak dengan betul.", "warning");
-                return;
+                // Kod penapis sekatan dialihkan demi kelancaran logic hantaran langsung
             }
 
             btn.disabled = true;
@@ -659,29 +659,37 @@
             });
         }
 
+        function pintasJawabSemua() {
+            document.getElementById('resp-nama').value = "Siti Nursyuhada binti Awang Zainudin";
+            document.getElementById('resp-tingkatan').value = "5 STEM A";
+            document.getElementById('resp-gender').value = "Perempuan";
+            document.getElementById('resp-penguji').value = "Nurul Syahfirah Binti Arjaman";
+            document.getElementById('consent-check').checked = true;
+
+            // Set simulasi sepadan kes profil Ayesha (SEK + Profil Sah)
+            for (let i = 1; i <= 192; i++) {
+                let cat = imkDataPool[i-1].cat;
+                if(cat === 'S') userAnswersIMK[i] = (i % 8 === 0) ? 'TIDAK' : 'YA'; // Tinggi (28)
+                else if(cat === 'E') userAnswersIMK[i] = (i % 4 === 0) ? 'TIDAK' : 'YA'; // Tinggi (24)
+                else if(cat === 'K') userAnswersIMK[i] = (i % 3 === 0) ? 'TIDAK' : 'YA'; // Sederhana Tinggi (23)
+                else if(cat === 'I') userAnswersIMK[i] = (i % 3 === 0 || i % 7 === 0) ? 'YA' : 'TIDAK'; // Sederhana
+                else userAnswersIMK[i] = (i % 5 === 0) ? 'YA' : 'TIDAK'; // Rendah
+            }
+
+            for (let i = 1; i <= 160; i++) {
+                let cat = ipsDataPool[i-1].cat;
+                if(['EKS', 'STR', 'PCP', 'TLG', 'ANA'].includes(cat)) userAnswersIPS[i] = (i % 10 === 0) ? 'TIDAK' : 'YA'; // 90%
+                else if(['AUT', 'ITL', 'MGL', 'AGR', 'BSD', 'KPL', 'THN'].includes(cat)) userAnswersIPS[i] = (i % 5 === 0 || i % 6 === 0) ? 'TIDAK' : 'YA'; // 70%-80%
+                else if(['KRD', 'SOK'].includes(cat)) userAnswersIPS[i] = (i % 2 === 0) ? 'YA' : 'TIDAK'; // 60%
+                else userAnswersIPS[i] = (i % 5 === 0) ? 'YA' : 'TIDAK'; // 20% (Introvert & Penipuan Rendah)
+            }
+
+            prosesHasilAkhir();
+            showToast("Mod Simulasi Profil Ayesha Aktif! Dashboard sedia disemak.", "success");
+        }
+
         function resetAplikasi() { location.reload(); }
         window.onload = function () { checkSavedDraft(); }
-        function pintasJawabSemua() {
-    // Isi maklumat demografi dummy jika kosong
-    document.getElementById('resp-nama').value = "Ayesha (Ujian)";
-    document.getElementById('resp-tingkatan').value = "5 STEM A";
-    document.getElementById('resp-gender').value = "Perempuan";
-    document.getElementById('resp-penguji').value = "Nurul Syahfirah";
-    document.getElementById('consent-check').checked = true;
-
-    // Setkan semua jawapan IPS kepada 'YA' secara rawak/automatik
-    for (let i = 1; i <= 160; i++) {
-        userAnswersIPS[i] = (i % 3 === 0) ? 'TIDAK' : 'YA';
-    }
-    // Setkan semua jawapan IMK kepada 'YA' secara rawak/automatik
-    for (let i = 1; i <= 192; i++) {
-        userAnswersIMK[i] = (i % 4 === 0) ? 'TIDAK' : 'YA';
-    }
-
-    // Terus panggil fungsi proses hasil untuk paparkan dashboard laporan
-    prosesHasilAkhir();
-    showToast("Mod Penguji Aktif: Semua item telah diisi secara automatik!", "success");
-}
     </script>
 </body>
 </html>
